@@ -26,19 +26,19 @@ namespace CrudWebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> Get()
+        public async Task<ActionResult<IEnumerable<User>>> Get(CancellationToken token)
         {
             if (!_context.Users.Any())
                 return NoContent();
-            return await _context.Users.ToListAsync();
+            return await _context.Users.ToListAsync(token);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> Get(long id)
+        public async Task<ActionResult<User>> Get(long id, CancellationToken token)
         {
             try
             {
-                return await _context.Users.FirstAsync(u => u.Id == id);
+                return await _context.Users.FirstAsync(u => u.Id == id, token);
             }
             catch (InvalidOperationException)
             {
@@ -46,26 +46,26 @@ namespace CrudWebApi.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult<User>> Post(User user)
+        public async Task<ActionResult<User>> Post(User user, CancellationToken token)
         {
             if (user is null)
                 return BadRequest();
             if (_context.Users.Contains(user))
                 return Conflict();
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(token);
             return Ok(user);
         }
 
         [HttpPut]
-        public async Task<ActionResult<User>> Put(User user)
+        public async Task<ActionResult<User>> Put(User user, CancellationToken token)
         {
             try
             {
-                var existingUser = _context.Users.First(u => u.Id == user.Id);
+                var existingUser = await _context.Users.FirstAsync(u => u.Id == user.Id, token);
                 _context.Users.Remove(existingUser);
                 _context.Users.Add(user);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(token);
                 return Ok(user);
             }
             catch (InvalidOperationException)
@@ -75,13 +75,13 @@ namespace CrudWebApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> Delete(long id)
+        public async Task<ActionResult<User>> Delete(long id, CancellationToken token)
         {
             try
             {
-                var userToDelete = _context.Users.First(u => u.Id == id);
+                var userToDelete = await _context.Users.FirstAsync(u => u.Id == id, token);
                 _context.Users.Remove(userToDelete);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(token);
                 return Ok();
             }
             catch (InvalidOperationException)
