@@ -11,12 +11,15 @@ namespace CrudWebApi.Controllers
         private readonly UserDbContext _context;
         private readonly IConfiguration _config;
 
+        private readonly bool _developmentMode =
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+
         public UserController(UserDbContext context, IConfiguration config)
         {
             _config = config;
             _context = context;
 
-            if (_config.GetValue<bool>("PrefillUserTable"))
+            if (_config.GetValue<bool>("PrefillUserTable") && _developmentMode)
             {
                 _context.Users.Add(new User() { Name = "Pavel", Age = 19 });
                 _context.Users.Add(new User() { Name = "John", Age = 56 });
