@@ -9,20 +9,22 @@ namespace CrudWebApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserDbContext _context;
+        private readonly IConfiguration _config;
 
-        public UserController(UserDbContext context)
+        public UserController(UserDbContext context, IConfiguration config)
         {
+            _config = config;
             _context = context;
 
-            //if (!_context.Users.Any())
-            //{
-            //    _context.Users.Add(new User() { Name = "Pavel", Age = 19 });
-            //    _context.Users.Add(new User() { Name = "John", Age = 56 });
-            //    _context.Users.Add(new User() { Name = "Bjorn", Age = 32 });
-            //    _context.Users.Add(new User() { Name = "Javier", Age = 27 });
-            //    _context.Users.Add(new User() { Name = "Josh", Age = 10 });
-            //    _context.SaveChanges();
-            //}
+            if (_config.GetValue<bool>("PrefillUserTable"))
+            {
+                _context.Users.Add(new User() { Name = "Pavel", Age = 19 });
+                _context.Users.Add(new User() { Name = "John", Age = 56 });
+                _context.Users.Add(new User() { Name = "Bjorn", Age = 32 });
+                _context.Users.Add(new User() { Name = "Javier", Age = 27 });
+                _context.Users.Add(new User() { Name = "Josh", Age = 10 });
+                _context.SaveChanges();
+            }
         }
 
         [HttpGet]

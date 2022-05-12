@@ -7,9 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-const string connectionString = @"Data Source=oleh-laptop;Initial Catalog=Users;Integrated Security=True";
-
-builder.Services.AddDbContext<UserDbContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<UserDbContext>(options => options.UseSqlServer(connectionString:"DefaultConnection"));
 
 var app = builder.Build();
 
